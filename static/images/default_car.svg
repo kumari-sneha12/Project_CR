@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Default car image</title>
+  <desc id="desc">A stylized luxury car placeholder used when a vehicle photo is unavailable.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16191f"/>
+      <stop offset="0.55" stop-color="#232834"/>
+      <stop offset="1" stop-color="#101216"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b88a2a"/>
+      <stop offset="0.45" stop-color="#f0cf7a"/>
+      <stop offset="1" stop-color="#9e711d"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-40%" width="140%" height="180%">
+      <feDropShadow dx="0" dy="28" stdDeviation="24" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <path d="M0 570 C180 515 330 610 510 552 C710 488 884 498 1200 420 L1200 760 L0 760 Z" fill="#0c0e11" opacity="0.88"/>
+  <g opacity="0.55">
+    <circle cx="1010" cy="150" r="120" fill="#f0cf7a" opacity="0.08"/>
+    <path d="M110 230 H1070" stroke="#f0cf7a" stroke-opacity="0.15" stroke-width="2"/>
+    <path d="M155 275 H985" stroke="#fff" stroke-opacity="0.08" stroke-width="1"/>
+  </g>
+  <g filter="url(#shadow)" transform="translate(122 255)">
+    <path d="M157 242 C173 177 217 138 298 127 L424 111 C461 76 503 55 557 52 L700 45 C770 42 823 69 868 116 L920 170 C964 181 999 210 1011 252 L1021 286 C1028 313 1008 340 980 340 H146 C115 340 94 309 105 280 L116 253 C122 240 137 234 157 242 Z" fill="#d9dde5"/>
+    <path d="M254 130 C310 97 416 82 556 73 L694 66 C754 64 800 86 838 128 L869 163 H201 C211 150 229 139 254 130 Z" fill="#262c36"/>
+    <path d="M292 125 C341 101 422 89 535 82 L538 163 H236 C249 147 267 135 292 125 Z" fill="#11151c"/>
+    <path d="M566 80 L692 74 C742 72 781 90 815 126 L849 163 H572 Z" fill="#121820"/>
+    <path d="M126 264 H1009 L1020 300 C1027 322 1011 340 987 340 H146 C119 340 101 314 111 289 Z" fill="#b9bec8"/>
+    <path d="M144 255 C263 278 833 281 1004 249 C1009 261 1016 285 1018 298 H112 C118 282 125 268 144 255 Z" fill="url(#gold)"/>
+    <path d="M183 221 H274 C291 221 306 231 313 246 L326 275 H147 L156 246 C160 231 168 221 183 221 Z" fill="#f3f5f7"/>
+    <path d="M850 223 H950 C973 223 990 239 996 265 L999 278 H813 L829 245 C834 232 840 223 850 223 Z" fill="#f7f0d6"/>
+    <circle cx="292" cy="337" r="88" fill="#0c0f14"/>
+    <circle cx="292" cy="337" r="53" fill="#262c35"/>
+    <circle cx="292" cy="337" r="25" fill="url(#gold)"/>
+    <circle cx="802" cy="337" r="88" fill="#0c0f14"/>
+    <circle cx="802" cy="337" r="53" fill="#262c35"/>
+    <circle cx="802" cy="337" r="25" fill="url(#gold)"/>
+    <path d="M392 242 H727" stroke="#8e949f" stroke-width="8" stroke-linecap="round" opacity="0.45"/>
+    <path d="M469 198 H533" stroke="#f0cf7a" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <text x="600" y="666" fill="#d8c17b" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="middle" letter-spacing="3">DRIVEEASE</text>
+</svg>

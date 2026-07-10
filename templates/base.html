@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveEase – Premium Car Rental</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="DriveEase offers premium car rental services. Book luxury cars, SUVs, sedans, and electric vehicles with smooth glassmorphism design and competitive prices.">
+    <meta name="keywords" content="car rental, premium cars, rent luxury car, electric vehicles, DriveEase, rent SUV">
+    <meta name="author" content="DriveEase Team">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="d-flex flex-column align-items-center">
+            <div class="spinner-luxury mb-3"></div>
+            <h5 class="text-gold tracking-widest text-uppercase" style="font-size: 0.9rem; letter-spacing: 2px;">DriveEase</h5>
+        </div>
+    </div>
+
+    <!-- Professional Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fa-solid fa-compass-drafting me-2 text-gold"></i>Drive<span>Ease</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'car_list' %}active{% endif %}" href="{% url 'car_list' %}">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Dark Mode Toggle Switch -->
+                    <div class="theme-switch-wrapper me-2">
+                        <label class="theme-switch" for="checkbox_theme">
+                            <input type="checkbox" id="checkbox_theme" />
+                            <div class="slider-switch">
+                                <i class="fas fa-sun text-warning sun-icon" style="font-size: 11px; margin-left: 5px;"></i>
+                                <i class="fas fa-moon text-light moon-icon" style="font-size: 11px; margin-left: auto; margin-right: 5px;"></i>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Auth buttons or profile dropdown -->
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <a class="btn btn-outline-gold dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0.5rem 1rem;">
+                                {% if user.avatar %}
+                                    <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                                {% else %}
+                                    <i class="fas fa-user-circle"></i>
+                                {% endif %}
+                                <span style="font-size: 0.8rem;">{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end glass-card" aria-labelledby="userDropdown" style="background: rgba(10, 25, 49, 0.95); border: 1px solid var(--accent-gold);">
+                                {% if user.is_staff or user.is_staff_admin or user.is_superuser %}
+                                    <li><a class="dropdown-item text-gold" href="{% url 'custom_admin_dashboard' %}"><i class="fas fa-chart-line me-2"></i>Admin Panel</a></li>
+                                    <li><hr class="dropdown-divider bg-light" style="opacity: 0.1;"></li>
+                                {% endif %}
+                                <li><a class="dropdown-item text-light" href="{% url 'dashboard' %}"><i class="fas fa-gauge me-2 text-gold"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'edit_profile' %}"><i class="fas fa-user-cog me-2 text-gold"></i>Edit Profile</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'my_bookings' %}"><i class="fas fa-calendar-alt me-2 text-gold"></i>My Bookings</a></li>
+                                <li><hr class="dropdown-divider bg-light" style="opacity: 0.1;"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-gold">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-gold">Signup</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        {% if messages %}
+            {% for message in messages %}
+                {% if "reset_link" not in message.tags %}
+                    <div class="toast glass-card" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header" style="background: rgba(10, 25, 49, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #fff;">
+                            <i class="fa-solid fa-bell me-2 text-gold"></i>
+                            <strong class="me-auto">Notification</strong>
+                            <small class="text-muted">Just now</small>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body text-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="text-white mb-3">Drive<span>Ease</span></h5>
+                    <p class="pe-lg-4 text-secondary">DriveEase offers premium luxury cars for business trips, personal vacations, and special occasions. We combine high-quality support with a clean responsive experience.</p>
+                    <div class="footer-social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'car_list' %}">Cars</a></li>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5>Newsletter</h5>
+                    <p class="text-secondary">Subscribe to our weekly newsletter to get the latest luxury offers.</p>
+                    <form action="#" method="POST" class="input-group">
+                        {% csrf_token %}
+                        <input type="email" class="form-control" placeholder="Email Address" required style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                        <button class="btn btn-gold" type="submit" style="border-top-left-radius: 0; border-bottom-left-radius: 0;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <hr style="background-color: rgba(255, 255, 255, 0.1);">
+            
+            <div class="row align-items-center mt-4">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-secondary">&copy; 2026 DriveEase Premium Car Rental. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <p class="mb-0 text-secondary"><i class="fas fa-heart text-danger"></i> Designed for luxury, driven by excellence.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button type="button" class="btn btn-gold btn-floating btn-lg" id="btn-back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap Bundle with Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Subpage Header (Space for sticky nav) -->
+<div style="padding-top: 6rem;"></div>
+
+<!-- Main Details Section -->
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Heading & Quick Info -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-2 border-bottom border-color">
+            <div>
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-1 d-inline-block" style="font-size: 0.8rem;">{{ car.category.name }} Collection</span>
+                <h1 class="font-serif text-white fw-bold display-5">{{ car.brand.name }} <span class="fw-light">{{ car.model_name }}</span></h1>
+                <p class="text-secondary mb-0"><i class="fas fa-map-marker-alt text-gold me-2"></i>Available at Beverly Hills & LAX Airport branches</p>
+            </div>
+            <div class="text-md-end mt-3 mt-md-0">
+                <div class="price-ribbon mb-1" id="car_price_per_day" data-price="{{ car.price_per_day }}">${{ car.price_per_day }}<span> / Day</span></div>
+                <div class="text-warning"><i class="fas fa-star me-1"></i>{{ car.rating }} <span class="text-secondary small">({{ reviews.count }} Reviews)</span></div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            
+            <!-- Left Side Details & Reviews -->
+            <div class="col-lg-8">
+                <!-- Large Image Slider / Carousel -->
+                <div id="carGalleryCarousel" class="carousel slide glass-card p-2 mb-5 border-color" data-bs-ride="carousel">
+                    <div class="carousel-inner rounded" style="max-height: 480px; overflow: hidden;">
+                        <div class="carousel-item active">
+                            <img src="{{ car.image_url }}" alt="{{ car.name }}" class="d-block w-100 img-fluid" style="object-fit: cover; max-height: 480px;">
+                        </div>
+                        {% for img in gallery_images %}
+                        <div class="carousel-item">
+                            <img src="{{ img.image_url }}" alt="{{ car.name }} Gallery" class="d-block w-100" style="object-fit: cover; max-height: 480px;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if gallery_images %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carGalleryCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carGalleryCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Car Description -->
+                <div class="mb-5">
+                    <h3 class="font-serif text-white mb-3">Vehicle Description</h3>
+                    <p class="text-secondary leading-relaxed">{{ car.description }}</p>
+                </div>
+
+                <!-- Detailed Specifications & Features -->
+                <div class="mb-5">
+                    <h3 class="font-serif text-white mb-3">Technical Specifications</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush glass-card p-2 border-color" style="background-color: var(--bg-secondary);">
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Brand:</span> <strong class="text-white">{{ car.brand.name }}</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Model:</span> <strong class="text-white">{{ car.model_name }}</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Production Year:</span> <strong class="text-white">{{ car.year }}</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Fuel System:</span> <strong class="text-white">{{ car.fuel_type }}</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush glass-card p-2 border-color" style="background-color: var(--bg-secondary);">
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Transmission:</span> <strong class="text-white">{{ car.transmission }}</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Seats Count:</span> <strong class="text-white">{{ car.seats }} Seats</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>Average Mileage:</span> <strong class="text-white">{{ car.mileage }} km/l</strong></li>
+                                <li class="list-group-item bg-transparent text-secondary d-flex justify-content-between"><span>AC System:</span> <strong class="text-white">{% if car.air_conditioning %}Dual Zone AC{% else %}No{% endif %}</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features checklist -->
+                <div class="mb-5">
+                    <h3 class="font-serif text-white mb-3">Included Safety & Convenience</h3>
+                    <div class="row g-2">
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>ABS Braking System</div>
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>Airbags Package</div>
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>Bluetooth Multimedia</div>
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>GPS Navigation</div>
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>Leather Upholstery</div>
+                        <div class="col-sm-4 col-6 text-secondary"><i class="fas fa-check-circle text-gold me-2"></i>Keyless Ignition</div>
+                    </div>
+                </div>
+
+                <!-- Reviews and Testimonials -->
+                <div class="mb-5">
+                    <h3 class="font-serif text-white mb-4">Customer Reviews</h3>
+                    
+                    <div class="mb-4">
+                        {% for r in reviews %}
+                        <div class="glass-card p-4 mb-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--accent-gold);">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-white mb-0">{{ r.user.first_name }} {{ r.user.last_name }}</h6>
+                                        <small class="text-secondary" style="font-size: 0.75rem;">{{ r.created_at|date:"M d, Y" }}</small>
+                                    </div>
+                                </div>
+                                <div class="text-warning small">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star {% if forloop.counter > r.rating %}far{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-secondary mb-0 small">{{ r.comment }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-secondary">No reviews for this car yet. Rent it and share your experience!</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Review Form -->
+                    {% if user.is_authenticated %}
+                    <div class="glass-card p-4 border-color">
+                        <h5 class="text-white mb-3 font-serif">Leave A Review</h5>
+                        <form action="{% url 'car_detail' car.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label text-secondary small">Your Rating</label>
+                                    {{ review_form.rating }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small">Your Review</label>
+                                    {{ review_form.comment }}
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-gold w-100 py-2.5 fw-bold">Publish Review</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center" role="alert">
+                        Please <a href="{% url 'login' %}" class="alert-link text-gold">login</a> to write a customer review.
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Right Side Booking Form -->
+            <div class="col-lg-4">
+                <div class="glass-card p-4 border-color position-sticky" style="top: 100px;">
+                    <h4 class="text-white font-serif mb-3 pb-2 border-bottom border-color"><i class="fa-solid fa-calendar-check text-gold me-2"></i>Rent This Car</h4>
+                    
+                    <form action="{% url 'checkout' car.id %}" method="GET">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Pickup Location</label>
+                            <input type="text" name="pickup_location" class="form-control" placeholder="e.g. Airport, Downtown" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Return Location</label>
+                            <input type="text" name="return_location" class="form-control" placeholder="e.g. Airport, Downtown" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Pickup Date</label>
+                            <input type="date" name="pickup_date" id="id_pickup_date" class="form-control" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small">Return Date</label>
+                            <input type="date" name="return_date" id="id_return_date" class="form-control" required>
+                        </div>
+
+                        <!-- Real time dynamic estimations cost layout -->
+                        <div class="p-3 rounded mb-4 bg-secondary" style="border: 1px solid var(--border-color); font-size: 0.85rem;">
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Duration:</span> <strong class="text-white" id="calc_days">1 Day</strong></div>
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Base Rental:</span> <strong class="text-white" id="calc_rent">${{ car.price_per_day }}</strong></div>
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Tax & VAT (15%):</span> <strong class="text-white" id="calc_tax">$0.00</strong></div>
+                            <hr class="bg-light my-2" style="opacity: 0.1;">
+                            <div class="d-flex justify-content-between text-gold fw-bold" style="font-size: 1.05rem;"><span>Grand Total:</span> <span id="calc_total">${{ car.price_per_day }}</span></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-3 fw-bold"><i class="fas fa-key me-2"></i>Proceed to Checkout</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveEase - Custom Staff Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar d-flex flex-column py-4">
+        <div class="px-4 mb-4">
+            <h4 class="text-white font-serif text-uppercase mb-0 tracking-wider">Drive<span>Ease</span></h4>
+            <span class="text-gold tracking-widest text-uppercase small" style="font-size: 0.65rem;">Staff Workspace</span>
+        </div>
+        
+        <nav class="flex-grow-1">
+            <a href="{% url 'custom_admin_dashboard' %}" class="admin-nav-link active"><i class="fas fa-gauge"></i>Dashboard</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Manage Fleet</span>
+            <a href="{% url 'custom_admin_list' 'cars' %}" class="admin-nav-link"><i class="fas fa-car"></i>Cars fleet</a>
+            <a href="{% url 'custom_admin_list' 'brands' %}" class="admin-nav-link"><i class="fas fa-gem"></i>Brands</a>
+            <a href="{% url 'custom_admin_list' 'categories' %}" class="admin-nav-link"><i class="fas fa-car-side"></i>Categories</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Operations</span>
+            <a href="{% url 'custom_admin_list' 'bookings' %}" class="admin-nav-link"><i class="fas fa-calendar-check"></i>Bookings</a>
+            <a href="{% url 'custom_admin_list' 'payments' %}" class="admin-nav-link"><i class="fas fa-wallet"></i>Payments</a>
+            <a href="{% url 'custom_admin_list' 'coupons' %}" class="admin-nav-link"><i class="fas fa-ticket-alt"></i>Coupons</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Reviews & Help</span>
+            <a href="{% url 'custom_admin_list' 'messages' %}" class="admin-nav-link"><i class="fas fa-envelope"></i>Messages</a>
+            <a href="{% url 'custom_admin_list' 'testimonials' %}" class="admin-nav-link"><i class="fas fa-comment-dots"></i>Testimonials</a>
+            <a href="{% url 'custom_admin_list' 'users' %}" class="admin-nav-link"><i class="fas fa-users"></i>Manage Users</a>
+        </nav>
+        
+        <div class="px-4 pt-4 border-top border-color mt-auto">
+            <a href="{% url 'home' %}" class="btn btn-outline-gold w-100 btn-sm"><i class="fas fa-home me-2"></i>Exit Admin</a>
+        </div>
+    </aside>
+
+    <!-- Admin Main Content -->
+    <main class="admin-content">
+        <!-- Top bar header -->
+        <header class="d-flex justify-content-between align-items-center mb-5 pb-2 border-bottom border-color">
+            <div>
+                <h2 class="text-white font-serif fw-bold mb-0">Revenue & Operations Dashboard</h2>
+                <p class="text-secondary mb-0">Real-time analytical statistics and operational data controls</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-secondary small">Hello, <strong>{{ user.first_name }}</strong> (Staff)</span>
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle border border-gold" style="width: 40px; height: 40px; object-fit: cover;">
+                {% endif %}
+            </div>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Stats Cards widgets -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="admin-card text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small text-uppercase tracking-wider">Total Revenue</span>
+                        <div class="p-2 rounded bg-secondary text-gold" style="border: 1px solid var(--border-color);"><i class="fas fa-dollar-sign"></i></div>
+                    </div>
+                    <h3 class="text-white mb-1">${{ total_revenue }}</h3>
+                    <small class="text-success"><i class="fas fa-caret-up me-1"></i>+12.4% past month</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="admin-card text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small text-uppercase tracking-wider">Total Bookings</span>
+                        <div class="p-2 rounded bg-secondary text-gold" style="border: 1px solid var(--border-color);"><i class="fas fa-calendar-alt"></i></div>
+                    </div>
+                    <h3 class="text-white mb-1">{{ total_bookings }}</h3>
+                    <small class="text-success"><i class="fas fa-caret-up me-1"></i>+8.1% past week</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="admin-card text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small text-uppercase tracking-wider">Active Rentals</span>
+                        <div class="p-2 rounded bg-secondary text-gold" style="border: 1px solid var(--border-color);"><i class="fas fa-car-side"></i></div>
+                    </div>
+                    <h3 class="text-white mb-1">{{ active_bookings }}</h3>
+                    <small class="text-secondary">Ongoing reservations</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="admin-card text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small text-uppercase tracking-wider">Fleet size</span>
+                        <div class="p-2 rounded bg-secondary text-gold" style="border: 1px solid var(--border-color);"><i class="fas fa-truck-loading"></i></div>
+                    </div>
+                    <h3 class="text-white mb-1">{{ total_cars }}</h3>
+                    <small class="text-secondary">Cars registered</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical Charts Row -->
+        <div class="row g-4 mb-5">
+            <!-- Line Chart: Revenue Trend -->
+            <div class="col-lg-8">
+                <div class="admin-card">
+                    <h5 class="text-white font-serif mb-4"><i class="fas fa-chart-line text-gold me-2"></i>Revenue Milestones (Past 6 Months)</h5>
+                    <canvas id="revenueChart" height="260" data-months="{{ months_json }}" data-amounts="{{ amounts_json }}"></canvas>
+                </div>
+            </div>
+            <!-- Doughnut Chart: Booking Statuses -->
+            <div class="col-lg-4">
+                <div class="admin-card">
+                    <h5 class="text-white font-serif mb-4"><i class="fas fa-chart-pie text-gold me-2"></i>Bookings Share</h5>
+                    <canvas id="bookingStatusChart" height="260" data-statuses="{{ statuses_json }}" data-counts="{{ counts_json }}"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed lists log grids -->
+        <div class="row g-4">
+            <!-- Left Side: Recent Bookings -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="text-white mb-0 font-serif"><i class="fas fa-clock text-gold me-2"></i>Recent Booking Logs</h5>
+                        <a href="{% url 'custom_admin_list' 'bookings' %}" class="btn btn-outline-gold btn-sm py-1 px-3" style="font-size: 0.75rem;">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0" style="background-color: transparent; font-size: 0.85rem;">
+                            <thead>
+                                <tr class="text-secondary">
+                                    <th>Ref</th>
+                                    <th>User</th>
+                                    <th>Vehicle</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in recent_bookings %}
+                                <tr style="vertical-align: middle;">
+                                    <td><strong>{{ b.booking_reference }}</strong></td>
+                                    <td>{{ b.user.username }}</td>
+                                    <td>{{ b.car.name }}</td>
+                                    <td class="text-gold font-bold">${{ b.grand_total }}</td>
+                                    <td><span class="badge {% if b.status == 'Confirmed' %}bg-success{% elif b.status == 'Pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ b.status }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No bookings log recorded.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Unread Contact Messages -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="text-white mb-0 font-serif"><i class="fas fa-envelope-open text-gold me-2"></i>Unread Messages</h5>
+                        <a href="{% url 'custom_admin_list' 'messages' %}" class="btn btn-outline-gold btn-sm py-1 px-3" style="font-size: 0.75rem;">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0" style="background-color: transparent; font-size: 0.85rem;">
+                            <thead>
+                                <tr class="text-secondary">
+                                    <th>Name</th>
+                                    <th>Subject</th>
+                                    <th>Received</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for m in recent_messages %}
+                                <tr style="vertical-align: middle;">
+                                    <td><strong>{{ m.name }}</strong></td>
+                                    <td>{{ m.subject|truncatechars:30 }}</td>
+                                    <td>{{ m.created_at|date:"M d, H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_list' 'messages' %}?read={{ m.id }}" class="btn btn-outline-gold btn-sm" style="font-size: 0.7rem;"><i class="fas fa-check"></i> Read</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">All support requests have been marked read.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Charts logic -->
+<script src="{% static 'js/charts.js' %}"></script>
+</body>
+</html>

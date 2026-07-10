@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="padding-top: 6rem;"></div>
+
+<section class="py-5">
+    <div class="container">
+        
+        <div class="row g-4">
+            
+            <!-- Left Navigation Sidebar -->
+            <div class="col-lg-3 no-print">
+                <div class="glass-card p-4 border-color text-center mb-4">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="rounded-circle border border-gold mb-3" style="width: 110px; height: 110px; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-7x text-gold mb-3"></i>
+                    {% endif %}
+                    <h5 class="text-white mb-1">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <span class="text-secondary small d-block">@{{ user.username }}</span>
+                </div>
+
+                <div class="glass-card p-2 border-color">
+                    <div class="list-group list-group-flush" style="background: transparent;">
+                        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-gauge me-3 text-gold"></i>Dashboard Overview</a>
+                        <a href="{% url 'edit_profile' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-user-cog me-3 text-gold"></i>Profile Settings</a>
+                        <a href="{% url 'my_bookings' %}" class="list-group-item list-group-item-action bg-transparent text-gold border-color active"><i class="fas fa-calendar-alt me-3"></i>My Bookings</a>
+                        <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-lock me-3 text-gold"></i>Change Password</a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0"><i class="fas fa-sign-out-alt me-3"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Dashboard Form/Details -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                    <div>
+                        <h2 class="text-white font-serif fw-bold">Booking Details</h2>
+                        <p class="text-secondary mb-0">Overview for reservation reference <strong class="text-gold">{{ booking.booking_reference }}</strong></p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-gold" onclick="window.print()"><i class="fas fa-print me-2"></i>Print Receipt</button>
+                        {% if booking.status == 'Confirmed' or booking.status == 'Pending' %}
+                            <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')"><i class="fas fa-times me-2"></i>Cancel Booking</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Printable Invoice Box -->
+                <div class="glass-card p-5 text-start border-color shadow-lg mb-4" id="invoice-print-area" style="background-color: var(--bg-secondary);">
+                    <!-- Invoice Header -->
+                    <div class="row align-items-center mb-4 pb-4 border-bottom border-color">
+                        <div class="col-sm-6">
+                            <h3 class="text-white mb-0 font-serif text-uppercase">Drive<span>Ease</span></h3>
+                            <small class="text-secondary">Premium Luxury Car Rentals</small>
+                        </div>
+                        <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+                            <h4 class="text-gold mb-0 font-serif">INVOICE RECEIPT</h4>
+                            <p class="text-secondary small mb-0">Booking Ref: <strong class="text-white">{{ booking.booking_reference }}</strong></p>
+                            <p class="text-secondary small mb-0">Date: {{ booking.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Client and Company Details -->
+                    <div class="row mb-5">
+                        <div class="col-sm-6">
+                            <h6 class="text-gold text-uppercase tracking-wider small mb-2" style="font-weight: 700;">Rented By:</h6>
+                            <h5 class="text-white mb-1">{{ booking.user.first_name }} {{ booking.user.last_name }}</h5>
+                            <p class="text-secondary small mb-0"><i class="fas fa-phone me-1"></i>{{ booking.user.phone }}</p>
+                            <p class="text-secondary small mb-0"><i class="fas fa-envelope me-1"></i>{{ booking.user.email }}</p>
+                        </div>
+                        <div class="col-sm-6 text-sm-end mt-4 mt-sm-0">
+                            <h6 class="text-gold text-uppercase tracking-wider small mb-2" style="font-weight: 700;">Rental Branch:</h6>
+                            <h5 class="text-white mb-1">DriveEase Beverly Hills</h5>
+                            <p class="text-secondary small mb-0">8420 Wilshire Blvd, Beverly Hills</p>
+                            <p class="text-secondary small mb-0">CA 90211, USA</p>
+                        </div>
+                    </div>
+
+                    <!-- Booking Schedule details -->
+                    <div class="p-4 rounded mb-5 bg-secondary" style="border: 1px solid var(--border-color);">
+                        <h5 class="text-white mb-3 font-serif"><i class="fas fa-car-side text-gold me-2"></i>Reserved Vehicle Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <span class="text-secondary small d-block">Vehicle Model:</span>
+                                <strong class="text-white">{{ booking.car.brand.name }} {{ booking.car.model_name }} ({{ booking.car.year }})</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-secondary small d-block">Category Class:</span>
+                                <strong class="text-white">{{ booking.car.category.name }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-secondary small d-block">Pickup Location & Date:</span>
+                                <strong class="text-white">{{ booking.pickup_location }} on {{ booking.pickup_date|date:"M d, Y" }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-secondary small d-block">Return Location & Date:</span>
+                                <strong class="text-white">{{ booking.return_location }} on {{ booking.return_date|date:"M d, Y" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Tables -->
+                    <h5 class="text-white mb-3 font-serif"><i class="fas fa-calculator text-gold me-2"></i>Invoice Calculations</h5>
+                    <table class="table table-dark table-borderless text-secondary mb-4" style="background-color: transparent;">
+                        <thead>
+                            <tr class="border-bottom border-color text-white" style="font-size: 0.85rem;">
+                                <th scope="col">Description</th>
+                                <th scope="col" class="text-center">Rate / Day</th>
+                                <th scope="col" class="text-center">Period</th>
+                                <th scope="col" class="text-end">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Luxury Car Rental ({{ booking.car.name }})</td>
+                                <td class="text-center">${{ booking.car.price_per_day }}</td>
+                                <td class="text-center">{{ booking.rental_days }} Days</td>
+                                <td class="text-end text-white">${{ booking.rental_cost }}</td>
+                            </tr>
+                            <tr>
+                                <td>VAT & Local Road Taxes (15% standard rate)</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-end text-white">${{ booking.tax_amount }}</td>
+                            </tr>
+                            {% if booking.discount_amount > 0 %}
+                            <tr class="text-success">
+                                <td>Coupon Discount Applied ({{ booking.coupon_applied.code }})</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-end">-${{ booking.discount_amount }}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-top border-color text-white" style="font-size: 1.1rem; font-weight: 700;">
+                                <td colspan="3" class="text-end text-gold font-serif">Grand Total Paid:</td>
+                                <td class="text-end text-gold">${{ booking.grand_total }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Payment Transaction Info -->
+                    <div class="row pt-2 border-top border-color">
+                        <div class="col-sm-6">
+                            <span class="text-secondary small d-block">Payment Status:</span>
+                            <span class="badge {% if booking.status == 'Confirmed' or booking.status == 'Completed' %}bg-success{% else %}bg-danger{% endif %}">{{ booking.status }}</span>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <span class="text-secondary small d-block">Transaction reference:</span>
+                            <strong class="text-white">{% if booking.payment %}{{ booking.payment.transaction_id }}{% else %}N/A{% endif %}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}

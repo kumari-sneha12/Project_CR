@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Subpage Header -->
+<section class="subpage-hero py-5 text-center border-bottom border-color" style="background-image: url('https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=1920');">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold font-serif text-white mb-2">About DriveEase</h1>
+    </div>
+</section>
+
+<!-- Company History -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Our Heritage</span>
+                <h2 class="h1 font-serif fw-bold mb-4">Redefining Car Rental Standard Since 2012</h2>
+                <p class="text-secondary mb-3">Founded in Los Angeles in 2012, DriveEase started as a family fleet of 5 luxury cars. Our goal has always been simple: offer premium vehicles with a clean transparent booking engine.</p>
+                <p class="text-secondary mb-4">Today, we manage a collection of over 50 prestige cars spanning multiple metropolitan centers. We focus on providing high-quality support, luxury specifications, and responsive digital tools.</p>
+                <div class="row g-4 mt-2">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <h3 class="display-5 text-gold fw-bold mb-0">15+</h3>
+                            <span class="text-secondary small d-block" style="line-height: 1.2;">Years of Corporate Excellence</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <h3 class="display-5 text-gold fw-bold mb-0">10k+</h3>
+                            <span class="text-secondary small d-block" style="line-height: 1.2;">Successful Rentals Done</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=800" alt="DriveEase Fleet" class="img-fluid rounded shadow-lg">
+                    <div class="glass-card position-absolute bottom-0 start-0 p-4 m-3 d-flex align-items-center gap-3 border-gold" style="max-width: 280px; border-left: 4px solid var(--accent-gold);">
+                        <i class="fas fa-award text-gold fa-2x"></i>
+                        <div>
+                            <h6 class="text-white mb-0">Fleet Award 2025</h6>
+                            <small class="text-secondary">Voted best premium rental service by US Traveler Magazine.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vision and Values -->
+<section class="py-5 bg-secondary border-top border-bottom border-color">
+    <div class="container text-center">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-7">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Vision & Mission</span>
+                <h2 class="h1 font-serif fw-bold text-white">Our Core Business Values</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="glass-card p-5 h-100 border-color" style="background-color: var(--bg-primary);">
+                    <i class="fas fa-bullseye text-gold fa-3x mb-4"></i>
+                    <h3 class="h4 text-white mb-3">Our Mission</h3>
+                    <p class="text-secondary mb-0">To deliver top-tier luxury car rentals with maximum convenience. We focus on transparent price charts, pristine vehicle sanitation, and immediate client support response.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card p-5 h-100 border-color" style="background-color: var(--bg-primary);">
+                    <i class="fas fa-eye text-gold fa-3x mb-4"></i>
+                    <h3 class="h4 text-white mb-3">Our Vision</h3>
+                    <p class="text-secondary mb-0">To become the global standard for premium car shares. We're actively building towards electric fleet options, digital app unlocks, and fully automated checking lines.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-5 my-5">
+    <div class="container text-center">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-7">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Expert Leadership</span>
+                <h2 class="h1 font-serif fw-bold">Meet Our Creative Team</h2>
+            </div>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for t in team_members %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-card p-4 h-100">
+                    <div class="mb-4 overflow-hidden rounded-circle mx-auto" style="width: 140px; height: 140px; background-color: var(--border-color);">
+                        <img src="{{ t.image_url }}" alt="{{ t.name }}" class="w-100 h-100" style="object-fit: cover;">
+                    </div>
+                    <h4 class="h5 text-white mb-1">{{ t.name }}</h4>
+                    <span class="text-gold text-uppercase tracking-wider d-block mb-3" style="font-size: 0.75rem;">{{ t.role }}</span>
+                    <p class="text-secondary small">Bringing years of experience in the luxury vehicle hospitality and automobile service industry.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="text-secondary hover-gold"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-secondary hover-gold"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

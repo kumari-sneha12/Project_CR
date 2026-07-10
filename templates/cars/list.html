@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Subpage Header -->
+<section class="subpage-hero py-5 text-center border-bottom border-color" style="background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920');">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold font-serif text-white mb-2">Explore Fleet</h1>
+    </div>
+</section>
+
+<!-- Listings Main Section -->
+<section class="py-5 my-4">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Sidebar Filter Column (Desktop Sticky) -->
+            <div class="col-lg-3">
+                <form action="{% url 'car_list' %}" method="GET" class="filter-sidebar glass-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-color">
+                        <h5 class="text-white mb-0 font-serif"><i class="fas fa-filter text-gold me-2"></i>Filters</h5>
+                        <a href="{% url 'car_list' %}" class="text-gold small text-decoration-none">Clear All</a>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Keywords</label>
+                        <div class="input-group">
+                            <input type="text" name="q" value="{{ filters.q }}" id="navbar-search-input" class="form-control bg-transparent" placeholder="Tesla, SUV..." autocomplete="off">
+                            <button class="btn btn-gold" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                        <!-- Suggestion Container -->
+                        <div id="search-suggestions" class="search-suggestions-box glass-card"></div>
+                    </div>
+
+                    <!-- Brand Select -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Brand</label>
+                        <select name="brand" class="form-select bg-transparent" onchange="this.form.submit()">
+                            <option value="">All Brands</option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.slug }}" {% if filters.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Category Select -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Category</label>
+                        <select name="category" class="form-select bg-transparent" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if filters.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Price Per Day</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="min_price" value="{{ filters.min_price }}" class="form-control bg-transparent" placeholder="Min $" style="font-size: 0.85rem;">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="max_price" value="{{ filters.max_price }}" class="form-control bg-transparent" placeholder="Max $" style="font-size: 0.85rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transmission Type -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Transmission</label>
+                        <div>
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="transmission" value="" id="trans_all" {% if not filters.transmission %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label text-secondary small" for="trans_all">All Transmissions</label>
+                            </div>
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="transmission" value="Automatic" id="trans_auto" {% if filters.transmission == 'Automatic' %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label text-secondary small" for="trans_auto">Automatic</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="transmission" value="Manual" id="trans_manual" {% if filters.transmission == 'Manual' %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label text-secondary small" for="trans_manual">Manual</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fuel Type -->
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small" style="font-weight: 600; text-transform: uppercase;">Fuel Type</label>
+                        <select name="fuel_type" class="form-select bg-transparent" onchange="this.form.submit()">
+                            <option value="">All Fuels</option>
+                            <option value="Petrol" {% if filters.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                            <option value="Diesel" {% if filters.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                            <option value="Electric" {% if filters.fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+                            <option value="Hybrid" {% if filters.fuel_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Filters button -->
+                    <button type="submit" class="btn btn-gold w-100 py-2.5 fw-bold">Apply Filters</button>
+                </form>
+            </div>
+
+            <!-- Cars Listing Column -->
+            <div class="col-lg-9">
+                <!-- Sorting & Top Bar -->
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-color">
+                    <p class="text-secondary mb-0">Showing <strong class="text-white">{{ page_obj.paginator.count }}</strong> premium vehicles</p>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-secondary small text-nowrap">Sort By:</span>
+                        <select name="sort_by" class="form-select bg-transparent border-color py-1 px-3" style="width: auto; font-size: 0.85rem;" onchange="const form = document.querySelector('.filter-sidebar'); const input = document.createElement('input'); input.type='hidden'; input.name='sort_by'; input.value=this.value; form.appendChild(input); form.submit();">
+                            <option value="popularity" {% if filters.sort_by == 'popularity' %}selected{% endif %}>Popularity</option>
+                            <option value="newest" {% if filters.sort_by == 'newest' %}selected{% endif %}>Newest Year</option>
+                            <option value="price_asc" {% if filters.sort_by == 'price_asc' %}selected{% endif %}>Lowest Price</option>
+                            <option value="price_desc" {% if filters.sort_by == 'price_desc' %}selected{% endif %}>Highest Price</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cars Grid -->
+                <div class="row g-4">
+                    {% for car in page_obj %}
+                    <div class="col-md-6">
+                        <div class="car-card glass-card">
+                            <div class="car-card-img-wrapper">
+                                <img src="{{ car.image_url }}" alt="{{ car.name }}" class="car-card-img">
+                                <div class="car-card-badge">{{ car.category.name }}</div>
+                                <div class="car-card-wishlist {% if car.id in wishlist_car_ids %}active{% endif %}" onclick="location.href='{% url 'wishlist_toggle' car.id %}'">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="h5 mb-0 text-white">{{ car.brand.name }} <span class="fw-light">{{ car.model_name }}</span></h4>
+                                    <div class="text-warning small"><i class="fas fa-star me-1"></i>{{ car.rating }}</div>
+                                </div>
+                                
+                                <div class="car-spec-grid">
+                                    <div class="car-spec-item"><i class="fas fa-gas-pump"></i>{{ car.fuel_type }}</div>
+                                    <div class="car-spec-item"><i class="fas fa-cogs"></i>{{ car.transmission }}</div>
+                                    <div class="car-spec-item"><i class="fas fa-chair"></i>{{ car.seats }} Seats</div>
+                                    <div class="car-spec-item"><i class="fas fa-tachometer-alt"></i>{{ car.mileage }} km</div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                                    <div class="price-ribbon">${{ car.price_per_day }}<span> / Day</span></div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-gold px-3" style="font-size: 0.75rem;"><i class="fas fa-info-circle"></i> Details</a>
+                                        <a href="{% url 'checkout' car.id %}" class="btn btn-gold px-3" style="font-size: 0.75rem;">Book</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="fas fa-car-side fa-3x mb-3 text-gold"></i>
+                        <p class="fs-5">No luxury vehicles match your filtering criteria.</p>
+                        <a href="{% url 'car_list' %}" class="btn btn-gold mt-3">Reset All Filters</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Custom Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav class="mt-5" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center gap-2">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link glass-card text-gold" href="?page={{ page_obj.previous_page_number }}&q={{ filters.q }}&brand={{ filters.brand }}&category={{ filters.category }}&min_price={{ filters.min_price }}&max_price={{ filters.max_price }}&transmission={{ filters.transmission }}&fuel_type={{ filters.fuel_type }}&seats={{ filters.seats }}&sort_by={{ filters.sort_by }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link bg-gold border-gold text-dark fw-bold">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item"><a class="page-link glass-card text-light" href="?page={{ num }}&q={{ filters.q }}&brand={{ filters.brand }}&category={{ filters.category }}&min_price={{ filters.min_price }}&max_price={{ filters.max_price }}&transmission={{ filters.transmission }}&fuel_type={{ filters.fuel_type }}&seats={{ filters.seats }}&sort_by={{ filters.sort_by }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link glass-card text-gold" href="?page={{ page_obj.next_page_number }}&q={{ filters.q }}&brand={{ filters.brand }}&category={{ filters.category }}&min_price={{ filters.min_price }}&max_price={{ filters.max_price }}&transmission={{ filters.transmission }}&fuel_type={{ filters.fuel_type }}&seats={{ filters.seats }}&sort_by={{ filters.sort_by }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/search.js' %}"></script>
+{% endblock %}

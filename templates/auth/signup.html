@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 d-flex align-items-center" style="min-height: 100vh; padding-top: 8rem !important; background: linear-gradient(135deg, rgba(10, 25, 49, 0.95) 0%, rgba(7, 14, 23, 0.98) 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="glass-card p-5 border-color animate__animated animate__fadeIn">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-compass-drafting fa-3x text-gold mb-2"></i>
+                        <h2 class="h3 font-serif text-white mb-1">Create Account</h2>
+                        <p class="text-secondary small">Sign up to book premium cars and manage rentals</p>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if "reset_link" not in message.tags %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <form action="{% url 'signup' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">Username</label>
+                                {{ form.username }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">Phone Number</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small mb-1">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">Password</label>
+                                {{ form.password }}
+                                <div class="text-muted" style="font-size: 0.7rem; margin-top: 4px;">
+                                    Min 8 chars, uppercase, lowercase, digit, special.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small mb-1">Confirm Password</label>
+                                {{ form.confirm_password }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-3 mt-4 mb-3 fw-bold"><i class="fas fa-user-plus me-2"></i>Register Account</button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <span class="text-secondary small">Already have an account? <a href="{% url 'login' %}" class="text-gold text-decoration-none fw-bold">Sign In Here</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

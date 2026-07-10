@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 d-flex align-items-center" style="min-height: 95vh; padding-top: 8rem !important; background: linear-gradient(135deg, rgba(10, 25, 49, 0.95) 0%, rgba(7, 14, 23, 0.98) 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="glass-card p-5 border-color">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-compass-drafting fa-3x text-gold mb-2"></i>
+                        <h2 class="h3 font-serif text-white mb-1">Drive<span>Ease</span> Login</h2>
+                        <p class="text-secondary small">Access your premium rental account</p>
+                    </div>
+
+                    <!-- Display standard Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if "reset_link" not in message.tags %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <form action="{% url 'login' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small" style="font-weight: 500;">Username or Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--accent-gold);"><i class="fas fa-user"></i></span>
+                                {{ form.username_or_email }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label text-secondary small mb-0" style="font-weight: 500;">Password</label>
+                                <a href="{% url 'forgot_password' %}" class="text-gold small text-decoration-none">Forgot Password?</a>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--accent-gold);"><i class="fas fa-lock"></i></span>
+                                {{ form.password }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            {{ form.remember_me }}
+                            <label class="form-check-label text-secondary small" for="id_remember_me">Remember me on this device</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold w-100 py-3 mb-3 fw-bold"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <span class="text-secondary small">Don't have an account? <a href="{% url 'signup' %}" class="text-gold text-decoration-none fw-bold">Sign Up Here</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

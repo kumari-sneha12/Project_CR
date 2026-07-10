@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} {{ model_name }} - DriveEase Admin</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar d-flex flex-column py-4">
+        <div class="px-4 mb-4">
+            <h4 class="text-white font-serif text-uppercase mb-0 tracking-wider">Drive<span>Ease</span></h4>
+            <span class="text-gold tracking-widest text-uppercase small" style="font-size: 0.65rem;">Staff Workspace</span>
+        </div>
+        
+        <nav class="flex-grow-1">
+            <a href="{% url 'custom_admin_dashboard' %}" class="admin-nav-link"><i class="fas fa-gauge"></i>Dashboard</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Manage Fleet</span>
+            <a href="{% url 'custom_admin_list' 'cars' %}" class="admin-nav-link {% if model_slug == 'cars' %}active{% endif %}"><i class="fas fa-car"></i>Cars fleet</a>
+            <a href="{% url 'custom_admin_list' 'brands' %}" class="admin-nav-link {% if model_slug == 'brands' %}active{% endif %}"><i class="fas fa-gem"></i>Brands</a>
+            <a href="{% url 'custom_admin_list' 'categories' %}" class="admin-nav-link {% if model_slug == 'categories' %}active{% endif %}"><i class="fas fa-car-side"></i>Categories</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Operations</span>
+            <a href="{% url 'custom_admin_list' 'bookings' %}" class="admin-nav-link {% if model_slug == 'bookings' %}active{% endif %}"><i class="fas fa-calendar-check"></i>Bookings</a>
+            <a href="{% url 'custom_admin_list' 'payments' %}" class="admin-nav-link {% if model_slug == 'payments' %}active{% endif %}"><i class="fas fa-wallet"></i>Payments</a>
+            <a href="{% url 'custom_admin_list' 'coupons' %}" class="admin-nav-link {% if model_slug == 'coupons' %}active{% endif %}"><i class="fas fa-ticket-alt"></i>Coupons</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Reviews & Help</span>
+            <a href="{% url 'custom_admin_list' 'messages' %}" class="admin-nav-link {% if model_slug == 'messages' %}active{% endif %}"><i class="fas fa-envelope"></i>Messages</a>
+            <a href="{% url 'custom_admin_list' 'testimonials' %}" class="admin-nav-link {% if model_slug == 'testimonials' %}active{% endif %}"><i class="fas fa-comment-dots"></i>Testimonials</a>
+            <a href="{% url 'custom_admin_list' 'users' %}" class="admin-nav-link {% if model_slug == 'users' %}active{% endif %}"><i class="fas fa-users"></i>Manage Users</a>
+        </nav>
+        
+        <div class="px-4 pt-4 border-top border-color mt-auto">
+            <a href="{% url 'home' %}" class="btn btn-outline-gold w-100 btn-sm"><i class="fas fa-home me-2"></i>Exit Admin</a>
+        </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-content">
+        <!-- Top bar header -->
+        <header class="d-flex justify-content-between align-items-center mb-5 pb-2 border-bottom border-color">
+            <div>
+                <h2 class="text-white font-serif fw-bold mb-0">{{ action }} {{ model_name }}</h2>
+                <p class="text-secondary mb-0">Customize and save record changes directly to the database</p>
+            </div>
+            
+            <div>
+                <a href="{% url 'custom_admin_list' model_slug %}" class="btn btn-outline-gold text-nowrap"><i class="fas fa-chevron-left me-2"></i>Back to List</a>
+            </div>
+        </header>
+
+        {% if form.errors and not form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                Please correct the database validation errors in fields below.
+            </div>
+        {% endif %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- Form Box -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card p-5 border-color mb-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <label class="form-label text-light fw-bold small">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ field.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <div class="text-secondary small mt-1" style="font-size: 0.75rem;">
+                                        {{ field.help_text }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex gap-3 mt-5 pt-3 border-top border-color">
+                            <button type="submit" class="btn btn-gold px-4 py-3 fw-bold flex-grow-1"><i class="fas fa-save me-2"></i>Save Record</button>
+                            <a href="{% url 'custom_admin_list' model_slug %}" class="btn btn-outline-gold px-4 py-3 fw-bold">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Bootstrap Bundle with Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

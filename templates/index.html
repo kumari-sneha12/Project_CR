@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920');">
+    <div class="container text-light">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-center text-lg-start">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-3 d-inline-block" style="letter-spacing: 3px; font-size: 0.85rem;">DriveEase Experience</span>
+                <h1 class="display-3 fw-bold mb-4 font-serif text-white">Find Your <span class="text-gold">Dream Car</span> For Any Occasion</h1>
+                <p class="lead mb-5 text-light opacity-75 pe-lg-5">Experience luxury and performance with our handpicked collection of supercars, SUVs, and electric vehicles. Rent by day or week with zero hidden charges.</p>
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                    <a href="{% url 'car_list' %}" class="btn btn-gold">Explore Fleet</a>
+                    <a href="{% url 'about' %}" class="btn btn-outline-light" style="border-width: 2px; padding: 0.7rem 1.7rem; font-size: 0.85rem; letter-spacing: 1px; font-weight: 600; text-transform: uppercase;">Our Story</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Booking Widget -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <form action="{% url 'car_list' %}" method="GET" class="search-widget glass-card">
+                <h4 class="text-gold mb-4 font-serif text-center text-lg-start"><i class="fa-solid fa-calendar-days me-2"></i>Book Your Journey</h4>
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-secondary" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Pickup Location</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--accent-gold);"><i class="fas fa-map-marker-alt"></i></span>
+                            <input type="text" name="q" class="form-control border-start-0" placeholder="e.g. Airport, Downtown" style="border-color: var(--border-color);" required>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label text-secondary" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Car Type</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--accent-gold);"><i class="fas fa-car-side"></i></span>
+                            <select name="category" class="form-select border-start-0" style="border-color: var(--border-color);">
+                                <option value="">All Categories</option>
+                                {% for cat in global_categories %}
+                                    <option value="{{ cat.slug }}">{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label text-secondary" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Pickup Date</label>
+                        <input type="date" name="pickup_date" class="form-control" style="border-color: var(--border-color);" required>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label text-secondary" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Return Date</label>
+                        <input type="date" name="return_date" class="form-control" style="border-color: var(--border-color);" required>
+                    </div>
+                    <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                        <button type="submit" class="btn btn-gold w-100 py-3" style="font-weight: 700;"><i class="fas fa-search me-2"></i>Search Vehicles</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Cars Fleet -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-8 text-center text-md-start">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Exclusive Fleet</span>
+                <h2 class="h1 font-serif fw-bold">Our Featured Luxury Collection</h2>
+            </div>
+            <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+                <a href="{% url 'car_list' %}" class="btn btn-outline-gold">View Full Collection</a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for car in featured_cars %}
+            <div class="col-lg-4 col-md-6">
+                <div class="car-card glass-card">
+                    <div class="car-card-img-wrapper">
+                        <img src="{{ car.image_url }}" alt="{{ car.name }}" class="car-card-img">
+                        <div class="car-card-badge">{{ car.category.name }}</div>
+                        <div class="car-card-wishlist {% if car.id in wishlist_car_ids %}active{% endif %}" onclick="location.href='{% url 'wishlist_toggle' car.id %}'">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h5 mb-0 text-white">{{ car.brand.name }} <span class="fw-light">{{ car.model_name }}</span></h4>
+                            <div class="text-warning small"><i class="fas fa-star me-1"></i>{{ car.rating }}</div>
+                        </div>
+                        
+                        <div class="car-spec-grid">
+                            <div class="car-spec-item"><i class="fas fa-gas-pump"></i>{{ car.fuel_type }}</div>
+                            <div class="car-spec-item"><i class="fas fa-cogs"></i>{{ car.transmission }}</div>
+                            <div class="car-spec-item"><i class="fas fa-chair"></i>{{ car.seats }} Seats</div>
+                            <div class="car-spec-item"><i class="fas fa-tachometer-alt"></i>{{ car.mileage }} km</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                            <div class="price-ribbon">${{ car.price_per_day }}<span> / Day</span></div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-gold px-3" style="font-size: 0.75rem;"><i class="fas fa-info-circle"></i> Details</a>
+                                <a href="{% url 'checkout' car.id %}" class="btn btn-gold px-3" style="font-size: 0.75rem;">Rent Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <i class="fas fa-car-side fa-3x mb-3 text-gold"></i>
+                <p>No premium cars available in the fleet currently. Check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5 bg-secondary border-top border-bottom border-color">
+    <div class="container">
+        <div class="text-center mb-5 max-w-2xl mx-auto">
+            <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">DriveEase Value</span>
+            <h2 class="h1 font-serif fw-bold text-white">Why Choose DriveEase?</h2>
+            <p class="text-secondary">We deliver a seamless rental experience tailored to your safety and convenience.</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper mx-auto">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h4 class="text-white h5 mb-3">Premium Luxury Fleet</h4>
+                    <p class="text-secondary mb-0">From sport supercars to roomy family SUVs, we inspect every vehicle to guarantee perfection before handoff.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper mx-auto">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h4 class="text-white h5 mb-3">Zero Hidden Fees</h4>
+                    <p class="text-secondary mb-0">We believe in total transparency. Our rates include VAT, local taxation, and basic insurance coverage.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper mx-auto">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4 class="text-white h5 mb-3">24/7 Roadside Assistance</h4>
+                    <p class="text-secondary mb-0">Whether you face flat tires or battery drainage, our roadside technical response team is always a call away.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics counters -->
+<section class="py-5 my-5">
+    <div class="container text-center">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-gold font-serif">1,500+</h2>
+                <p class="text-secondary mb-0 text-uppercase tracking-wider font-semibold" style="font-size: 0.75rem;">Happy Clients</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-gold font-serif">50+</h2>
+                <p class="text-secondary mb-0 text-uppercase tracking-wider font-semibold" style="font-size: 0.75rem;">Premium Cars</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-gold font-serif">15+</h2>
+                <p class="text-secondary mb-0 text-uppercase tracking-wider font-semibold" style="font-size: 0.75rem;">Active Cities</p>
+            </div>
+            <div class="col-md-3 col-6">
+                <h2 class="display-4 fw-bold text-gold font-serif">0</h2>
+                <p class="text-secondary mb-0 text-uppercase tracking-wider font-semibold" style="font-size: 0.75rem;">Accident Liability</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Reviews Testimonials Slider -->
+<section class="py-5 bg-secondary border-top border-bottom border-color">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Client Reviews</span>
+            <h2 class="h1 font-serif fw-bold text-white">What Our Customers Say</h2>
+        </div>
+
+        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for t in testimonials %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="text-warning mb-3">
+                                {% for i in "12345" %}
+                                    <i class="fas fa-star {% if forloop.counter > t.rating %}far{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                            <p class="fs-5 text-light font-serif mb-4 italic">"{{ t.message }}"</p>
+                            <h5 class="text-gold mb-1">{{ t.name }}</h5>
+                            <span class="text-secondary small">{{ t.designation }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="carousel-item active text-center">
+                    <p class="text-muted">No testimonials registered yet. Rent a car and write your thoughts!</p>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">FAQ Help</span>
+            <h2 class="h1 font-serif fw-bold">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <div class="accordion-item bg-transparent border-bottom border-color py-3">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button bg-transparent collapsed text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                What documents are required to rent a vehicle?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                You must present a valid Government-issued Driver's license (valid for at least 1 year), a Passport or national identification card, and a credit card in your name to hold the basic booking authorization deposits.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-bottom border-color py-3">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button bg-transparent collapsed text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                What is the minimum age to rent?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                You must be at least 21 years old to rent standard vehicles, and at least 25 years old to access luxury supercars and premium SUVs. An additional 'young driver fee' may apply for drivers under 25.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-bottom border-color py-3">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button bg-transparent collapsed text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Can I cancel or modify my booking?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                Yes. You can cancel your reservation directly from your dashboard up to 24 hours prior to the scheduled pickup time for a full refund of deposit. Cancellations made within 24 hours may incur a small transaction fee.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

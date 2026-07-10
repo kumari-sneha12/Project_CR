@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage {{ model_name }} - DriveEase Admin</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar d-flex flex-column py-4">
+        <div class="px-4 mb-4">
+            <h4 class="text-white font-serif text-uppercase mb-0 tracking-wider">Drive<span>Ease</span></h4>
+            <span class="text-gold tracking-widest text-uppercase small" style="font-size: 0.65rem;">Staff Workspace</span>
+        </div>
+        
+        <nav class="flex-grow-1">
+            <a href="{% url 'custom_admin_dashboard' %}" class="admin-nav-link"><i class="fas fa-gauge"></i>Dashboard</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Manage Fleet</span>
+            <a href="{% url 'custom_admin_list' 'cars' %}" class="admin-nav-link {% if model_slug == 'cars' %}active{% endif %}"><i class="fas fa-car"></i>Cars fleet</a>
+            <a href="{% url 'custom_admin_list' 'brands' %}" class="admin-nav-link {% if model_slug == 'brands' %}active{% endif %}"><i class="fas fa-gem"></i>Brands</a>
+            <a href="{% url 'custom_admin_list' 'categories' %}" class="admin-nav-link {% if model_slug == 'categories' %}active{% endif %}"><i class="fas fa-car-side"></i>Categories</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Operations</span>
+            <a href="{% url 'custom_admin_list' 'bookings' %}" class="admin-nav-link {% if model_slug == 'bookings' %}active{% endif %}"><i class="fas fa-calendar-check"></i>Bookings</a>
+            <a href="{% url 'custom_admin_list' 'payments' %}" class="admin-nav-link {% if model_slug == 'payments' %}active{% endif %}"><i class="fas fa-wallet"></i>Payments</a>
+            <a href="{% url 'custom_admin_list' 'coupons' %}" class="admin-nav-link {% if model_slug == 'coupons' %}active{% endif %}"><i class="fas fa-ticket-alt"></i>Coupons</a>
+            <hr class="bg-light mx-3" style="opacity: 0.1;">
+            <span class="px-4 py-2 text-secondary small text-uppercase font-bold d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Reviews & Help</span>
+            <a href="{% url 'custom_admin_list' 'messages' %}" class="admin-nav-link {% if model_slug == 'messages' %}active{% endif %}"><i class="fas fa-envelope"></i>Messages</a>
+            <a href="{% url 'custom_admin_list' 'testimonials' %}" class="admin-nav-link {% if model_slug == 'testimonials' %}active{% endif %}"><i class="fas fa-comment-dots"></i>Testimonials</a>
+            <a href="{% url 'custom_admin_list' 'users' %}" class="admin-nav-link {% if model_slug == 'users' %}active{% endif %}"><i class="fas fa-users"></i>Manage Users</a>
+        </nav>
+        
+        <div class="px-4 pt-4 border-top border-color mt-auto">
+            <a href="{% url 'home' %}" class="btn btn-outline-gold w-100 btn-sm"><i class="fas fa-home me-2"></i>Exit Admin</a>
+        </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-content">
+        <!-- Top bar header -->
+        <header class="d-flex justify-content-between align-items-center mb-5 pb-2 border-bottom border-color">
+            <div>
+                <h2 class="text-white font-serif fw-bold mb-0">Manage {{ model_name }}</h2>
+                <p class="text-secondary mb-0">Full CRUD operations and search logs for database table</p>
+            </div>
+            
+            <div class="d-flex gap-3">
+                <!-- Search Box -->
+                <form action="{% url 'custom_admin_list' model_slug %}" method="GET" class="input-group" style="max-width: 300px;">
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search records...">
+                    <button class="btn btn-gold" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+
+                <!-- Add New Button -->
+                {% if model_slug != 'bookings' and model_slug != 'payments' and model_slug != 'messages' %}
+                    <a href="{% url 'custom_admin_create' model_slug %}" class="btn btn-gold text-nowrap"><i class="fas fa-plus me-2"></i>Add Record</a>
+                {% endif %}
+            </div>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Database Table Records -->
+        <div class="glass-card p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0" style="background-color: transparent; vertical-align: middle;">
+                    <thead>
+                        <!-- Dynamic Columns based on model -->
+                        {% if model_slug == 'users' %}
+                            <tr class="text-secondary">
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Staff Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'cars' %}
+                            <tr class="text-secondary">
+                                <th>Image</th>
+                                <th>Vehicle Model</th>
+                                <th>Category</th>
+                                <th>Price/Day</th>
+                                <th>Specs</th>
+                                <th>Availability</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'brands' %}
+                            <tr class="text-secondary">
+                                <th>Logo</th>
+                                <th>Name</th>
+                                <th>Slug</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'categories' %}
+                            <tr class="text-secondary">
+                                <th>Icon</th>
+                                <th>Name</th>
+                                <th>Slug</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'bookings' %}
+                            <tr class="text-secondary">
+                                <th>Ref</th>
+                                <th>User</th>
+                                <th>Car Model</th>
+                                <th>Dates</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'payments' %}
+                            <tr class="text-secondary">
+                                <th>Transaction Ref</th>
+                                <th>Booking Ref</th>
+                                <th>Paid Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        {% elif model_slug == 'coupons' %}
+                            <tr class="text-secondary">
+                                <th>Code</th>
+                                <th>Discount</th>
+                                <th>Valid Period</th>
+                                <th>Active Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'messages' %}
+                            <tr class="text-secondary">
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Message Details</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% elif model_slug == 'testimonials' %}
+                            <tr class="text-secondary">
+                                <th>Author</th>
+                                <th>Designation</th>
+                                <th>Message</th>
+                                <th>Rating</th>
+                                <th>Active</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% for record in page_obj %}
+                            <tr>
+                                {% if model_slug == 'users' %}
+                                    <td>{{ record.id }}</td>
+                                    <td><strong>{{ record.username }}</strong></td>
+                                    <td>{{ record.first_name }} {{ record.last_name }}</td>
+                                    <td>{{ record.email }}</td>
+                                    <td>{{ record.phone }}</td>
+                                    <td><span class="badge {% if record.is_staff %}bg-success{% else %}bg-secondary{% endif %}">{% if record.is_staff %}Staff{% else %}Customer{% endif %}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'cars' %}
+                                    <td>
+                                        <img src="{{ record.image_url }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
+                                    </td>
+                                    <td><strong>{{ record.brand.name }} {{ record.model_name }}</strong> <span class="text-secondary small">({{ record.year }})</span></td>
+                                    <td>{{ record.category.name }}</td>
+                                    <td class="text-gold fw-bold">${{ record.price_per_day }}</td>
+                                    <td><span class="text-secondary small">{{ record.transmission }} | {{ record.fuel_type }}</span></td>
+                                    <td><span class="badge {% if record.is_available %}bg-success{% else %}bg-danger{% endif %}">{% if record.is_available %}Available{% else %}Rented{% endif %}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this car?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'brands' %}
+                                    <td>
+                                        {% if record.logo %}
+                                            <img src="{{ record.logo.url }}" class="rounded" style="width: 40px; height: 30px; object-fit: contain;">
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ record.name }}</strong></td>
+                                    <td>{{ record.slug }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this brand?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'categories' %}
+                                    <td><i class="fa-solid {{ record.icon }} text-gold fa-lg"></i></td>
+                                    <td><strong>{{ record.name }}</strong></td>
+                                    <td>{{ record.slug }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'bookings' %}
+                                    <td><strong>{{ record.booking_reference }}</strong></td>
+                                    <td>{{ record.user.username }}</td>
+                                    <td>{{ record.car.name }}</td>
+                                    <td><span class="text-secondary small">{{ record.pickup_date }} to {{ record.return_date }}</span></td>
+                                    <td class="text-gold fw-bold">${{ record.grand_total }}</td>
+                                    <td><span class="badge {% if record.status == 'Confirmed' %}bg-success{% elif record.status == 'Pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ record.status }}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this booking?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'payments' %}
+                                    <td><strong>{{ record.transaction_id }}</strong></td>
+                                    <td>{{ record.booking.booking_reference }}</td>
+                                    <td class="text-gold fw-bold">${{ record.amount }}</td>
+                                    <td>{{ record.get_payment_method_display }}</td>
+                                    <td>{{ record.payment_date|date:"Y-m-d H:i" }}</td>
+                                    <td><span class="badge {% if record.status == 'Completed' %}bg-success{% else %}bg-danger{% endif %}">{{ record.status }}</span></td>
+                                {% elif model_slug == 'coupons' %}
+                                    <td><strong>{{ record.code }}</strong></td>
+                                    <td><span class="badge bg-success">{{ record.discount_percentage }}% Off</span></td>
+                                    <td><span class="text-secondary small">{{ record.valid_from|date:"Y-m-d" }} to {{ record.valid_to|date:"Y-m-d" }}</span></td>
+                                    <td><span class="badge {% if record.active %}bg-success{% else %}bg-danger{% endif %}">{% if record.active %}Active{% else %}Inactive{% endif %}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this coupon?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'messages' %}
+                                    <td><strong>{{ record.name }}</strong></td>
+                                    <td>{{ record.email }}</td>
+                                    <td>{{ record.subject }}</td>
+                                    <td><small class="text-secondary">{{ record.message }}</small></td>
+                                    <td><span class="badge {% if record.is_read %}bg-secondary{% else %}bg-success{% endif %}">{% if record.is_read %}Read{% else %}New{% endif %}</span></td>
+                                    <td class="text-end">
+                                        {% if not record.is_read %}
+                                            <a href="?read={{ record.id }}" class="btn btn-outline-gold btn-sm" style="font-size: 0.75rem;"><i class="fas fa-check"></i> Read</a>
+                                        {% endif %}
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete message log?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% elif model_slug == 'testimonials' %}
+                                    <td><strong>{{ record.name }}</strong></td>
+                                    <td>{{ record.designation }}</td>
+                                    <td><small class="text-secondary">{{ record.message|truncatewords:15 }}</small></td>
+                                    <td><span class="text-warning"><i class="fas fa-star me-1"></i>{{ record.rating }}</span></td>
+                                    <td><span class="badge {% if record.is_active %}bg-success{% else %}bg-danger{% endif %}">{% if record.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'custom_admin_update' model_slug record.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'custom_admin_delete' model_slug record.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete testimonial?')"><i class="fas fa-trash"></i></a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="100" class="text-center text-muted py-5">No records found matching table model or filters.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Custom Pagination in Admin -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4" aria-label="Admin Page navigation">
+                <ul class="pagination justify-content-center gap-2">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link glass-card text-gold" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">&laquo;</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link bg-gold border-gold text-dark fw-bold">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link glass-card text-light" href="?page={{ num }}&q={{ search_query }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link glass-card text-gold" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+<!-- Bootstrap Bundle with Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

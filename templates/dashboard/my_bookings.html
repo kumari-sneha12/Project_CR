@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="padding-top: 6rem;"></div>
+
+<section class="py-5">
+    <div class="container">
+        
+        <div class="row g-4">
+            
+            <!-- Left Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="glass-card p-4 border-color text-center mb-4">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="rounded-circle border border-gold mb-3" style="width: 110px; height: 110px; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-7x text-gold mb-3"></i>
+                    {% endif %}
+                    <h5 class="text-white mb-1">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <span class="text-secondary small d-block">@{{ user.username }}</span>
+                </div>
+
+                <div class="glass-card p-2 border-color">
+                    <div class="list-group list-group-flush" style="background: transparent;">
+                        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-gauge me-3 text-gold"></i>Dashboard Overview</a>
+                        <a href="{% url 'edit_profile' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-user-cog me-3 text-gold"></i>Profile Settings</a>
+                        <a href="{% url 'my_bookings' %}" class="list-group-item list-group-item-action bg-transparent text-gold border-color active"><i class="fas fa-calendar-alt me-3"></i>My Bookings</a>
+                        <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-lock me-3 text-gold"></i>Change Password</a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0"><i class="fas fa-sign-out-alt me-3"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Dashboard Table -->
+            <div class="col-lg-9">
+                <div class="mb-4">
+                    <h2 class="text-white font-serif fw-bold">My Bookings History</h2>
+                    <p class="text-secondary mb-0">Track reservation milestones and download digital invoice receipts.</p>
+                </div>
+
+                <div class="glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0" style="background-color: transparent;">
+                            <thead>
+                                <tr class="text-secondary" style="font-size: 0.8rem; text-transform: uppercase;">
+                                    <th>Ref Reference</th>
+                                    <th>Reserved Car</th>
+                                    <th>Pickup Location</th>
+                                    <th>Return Location</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr style="vertical-align: middle;">
+                                    <td><strong class="text-white">{{ booking.booking_reference }}</strong></td>
+                                    <td>{{ booking.car.name }}</td>
+                                    <td>{{ booking.pickup_location }}</td>
+                                    <td>{{ booking.return_location }}</td>
+                                    <td class="text-gold fw-bold">${{ booking.grand_total }}</td>
+                                    <td>
+                                        <span class="badge {% if booking.status == 'Confirmed' %}bg-success{% elif booking.status == 'Pending' %}bg-warning text-dark{% elif booking.status == 'Completed' %}bg-info text-dark{% else %}bg-danger{% endif %}">
+                                            {{ booking.status }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-eye me-1"></i>View Details</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-5">
+                                        <i class="fas fa-history fa-3x mb-3 text-gold"></i>
+                                        <p>No reservation history recorded on your account.</p>
+                                        <a href="{% url 'car_list' %}" class="btn btn-gold mt-2">Rent a Luxury Car</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}

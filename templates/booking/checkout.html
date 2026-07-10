@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="padding-top: 6rem;"></div>
+
+<section class="py-5">
+    <div class="container">
+        
+        <div class="mb-5 pb-2 border-bottom border-color">
+            <h1 class="font-serif text-white fw-bold display-5">Complete Reservation</h1>
+            <p class="text-secondary mb-0">Confirm pickup schedule and finalize secure billing</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if "reset_link" not in message.tags %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'checkout' car.id %}">
+            {% csrf_token %}
+            <div class="row g-5">
+                
+                <!-- Left Side: Schedule & Billing -->
+                <div class="col-lg-8">
+                    <!-- Schedule Info -->
+                    <div class="glass-card p-4 mb-4 border-color">
+                        <h4 class="text-white font-serif mb-4"><i class="fas fa-calendar-alt text-gold me-2"></i>Pickup & Drop Schedule</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Pickup Location</label>
+                                {{ booking_form.pickup_location }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Drop Location</label>
+                                {{ booking_form.return_location }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Pickup Date</label>
+                                {{ booking_form.pickup_date }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Return Date</label>
+                                {{ booking_form.return_date }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Mock Gateway -->
+                    <div class="glass-card p-4 border-color">
+                        <h4 class="text-white font-serif mb-4"><i class="fas fa-shield-alt text-gold me-2"></i>Secure Payment Gateway</h4>
+                        
+                        <!-- Choice list -->
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small mb-3">Select Payment Method</label>
+                            <div class="d-flex flex-wrap gap-4">
+                                {% for radio in payment_form.payment_method %}
+                                    <div class="form-check form-check-inline bg-secondary p-3 rounded glass-card" style="border: 1px solid var(--border-color); min-width: 160px; margin-right: 0;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label text-light fw-bold" for="{{ radio.id_for_label }}">
+                                                {{ radio.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Card Inputs Container -->
+                        <div id="card_inputs_wrapper" class="p-4 rounded mb-3 bg-secondary" style="border: 1px solid var(--border-color); display: none;">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small">Card Number</label>
+                                    {{ payment_form.card_number }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small">Cardholder Name</label>
+                                    {{ payment_form.card_name }}
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small">Expiry Date</label>
+                                    {{ payment_form.card_expiry }}
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small">CVV Code</label>
+                                    {{ payment_form.card_cvv }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PayPal Inputs Container -->
+                        <div id="paypal_inputs_wrapper" class="p-4 rounded mb-3 bg-secondary" style="border: 1px solid var(--border-color); display: none;">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small">PayPal Email Address</label>
+                                {{ payment_form.paypal_email }}
+                            </div>
+                            <small class="text-secondary"><i class="fas fa-info-circle me-1"></i>You will be redirected to PayPal sandbox page upon confirmation.</small>
+                        </div>
+
+                        <!-- Cash Info Container -->
+                        <div id="cash_inputs_wrapper" class="p-4 rounded mb-3 bg-secondary" style="border: 1px solid var(--border-color); display: none;">
+                            <p class="text-light mb-0"><i class="fas fa-hand-holding-usd text-gold me-2"></i>Pay in cash at our counter during physical checkout.</p>
+                            <small class="text-secondary">Please bring your reservation receipt reference code.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Order Summary -->
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 border-color position-sticky" style="top: 100px;">
+                        <h4 class="text-white font-serif mb-4 pb-2 border-bottom border-color"><i class="fas fa-receipt text-gold me-2"></i>Order Summary</h4>
+                        
+                        <!-- Car Brief -->
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <img src="{{ car.image_url }}" alt="{{ car.name }}" class="rounded" style="width: 80px; height: 60px; object-fit: cover; border: 1px solid var(--border-color);">
+                            <div>
+                                <h6 class="text-white mb-0">{{ car.brand.name }} {{ car.model_name }}</h6>
+                                <span class="text-secondary small">{{ car.year }} - {{ car.transmission }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="p-3 rounded mb-4 bg-secondary" style="border: 1px solid var(--border-color); font-size: 0.85rem;">
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Rental Period:</span> <strong class="text-white">{{ calc.rental_days }} Days</strong></div>
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Base Cost:</span> <strong class="text-white">${{ calc.rental_cost }}</strong></div>
+                            <div class="d-flex justify-content-between text-secondary mb-2"><span>Tax & VAT (15%):</span> <strong class="text-white">${{ calc.tax_amount }}</strong></div>
+                            {% if calc.discount_amount > 0 %}
+                                <div class="d-flex justify-content-between text-success mb-2"><span>Coupon Discount:</span> <strong class="text-success">-${{ calc.discount_amount }}</strong></div>
+                            {% endif %}
+                            <hr class="bg-light my-2" style="opacity: 0.1;">
+                            <div class="d-flex justify-content-between text-gold fw-bold" style="font-size: 1.05rem;"><span>Grand Total:</span> <span>${{ calc.grand_total }}</span></div>
+                        </div>
+
+                        <!-- Coupon Code -->
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small">Coupon Code</label>
+                            <div class="input-group">
+                                <input type="text" name="coupon_code" value="{{ coupon_code }}" class="form-control" placeholder="Promo Code">
+                                <button class="btn btn-outline-gold" type="submit" name="apply_coupon_btn">Apply</button>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <button type="submit" name="submit_booking_btn" class="btn btn-gold w-100 py-3 fw-bold"><i class="fas fa-lock me-2"></i>Confirm & Pay</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle toggling of credit card and PayPal inputs based on selected radio
+    document.addEventListener('DOMContentLoaded', function() {
+        const cardWrapper = document.getElementById('card_inputs_wrapper');
+        const paypalWrapper = document.getElementById('paypal_inputs_wrapper');
+        const cashWrapper = document.getElementById('cash_inputs_wrapper');
+        
+        function updatePaymentFields() {
+            const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (selectedMethod) {
+                const val = selectedMethod.value;
+                cardWrapper.style.display = (val === 'Card') ? 'block' : 'none';
+                paypalWrapper.style.display = (val === 'PayPal') ? 'block' : 'none';
+                cashWrapper.style.display = (val === 'Cash') ? 'block' : 'none';
+            }
+        }
+        
+        const radios = document.querySelectorAll('input[name="payment_method"]');
+        radios.forEach(r => r.addEventListener('change', updatePaymentFields));
+        
+        // Run once on load
+        updatePaymentFields();
+    });
+</script>
+{% endblock %}

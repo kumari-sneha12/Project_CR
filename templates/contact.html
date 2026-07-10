@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Subpage Header -->
+<section class="subpage-hero py-5 text-center border-bottom border-color" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1920');">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold font-serif text-white mb-2">Contact DriveEase</h1>
+    </div>
+</section>
+
+<!-- Main Details -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Side Info -->
+            <div class="col-lg-5">
+                <span class="text-gold text-uppercase tracking-widest fw-bold mb-2 d-inline-block" style="font-size: 0.8rem;">Get In Touch</span>
+                <h2 class="h1 font-serif fw-bold mb-4">We'd Love To Hear From You</h2>
+                <p class="text-secondary mb-5">Have questions about our fleet, rates, or rental policies? Feel free to contact our customer support team. We're available 24/7 to assist you.</p>
+                
+                <div class="d-flex align-items-start gap-4 mb-4">
+                    <div class="glass-card d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(197, 160, 89, 0.1); border-color: rgba(197, 160, 89, 0.2); flex-shrink: 0;">
+                        <i class="fas fa-map-marked-alt text-gold"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Corporate Headquarters</h5>
+                        <p class="text-secondary mb-0">8420 Wilshire Blvd, Beverly Hills, CA 90211, USA</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-4 mb-4">
+                    <div class="glass-card d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(197, 160, 89, 0.1); border-color: rgba(197, 160, 89, 0.2); flex-shrink: 0;">
+                        <i class="fas fa-phone-alt text-gold"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Customer Support Hotline</h5>
+                        <p class="text-secondary mb-0">+1 (800) 555-0199 (Toll-Free)</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-4 mb-4">
+                    <div class="glass-card d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(197, 160, 89, 0.1); border-color: rgba(197, 160, 89, 0.2); flex-shrink: 0;">
+                        <i class="fas fa-envelope text-gold"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Email Correspondence</h5>
+                        <p class="text-secondary mb-0">support@driveease-premium.com</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-4">
+                    <div class="glass-card d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(197, 160, 89, 0.1); border-color: rgba(197, 160, 89, 0.2); flex-shrink: 0;">
+                        <i class="fas fa-clock text-gold"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Operating Hours</h5>
+                        <p class="text-secondary mb-0">Mon - Sun: 24 Hours Assistance Available</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Form -->
+            <div class="col-lg-7">
+                <div class="glass-card p-5 border-color">
+                    <h4 class="text-white mb-4 font-serif">Send Us A Message</h4>
+                    <form action="{% url 'contact' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Your Name</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small">Subject</label>
+                                {{ form.subject }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small">Message</label>
+                                {{ form.message }}
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-gold w-100 py-3" style="font-weight: 700;"><i class="fas fa-paper-plane me-2"></i>Submit Message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Google Map Placeholder -->
+        <div class="row mt-5 pt-4">
+            <div class="col-12">
+                <div class="glass-card p-2 border-color" style="height: 400px; overflow: hidden; border-radius: var(--radius-md);">
+                    <div class="w-100 h-100 bg-secondary d-flex flex-column align-items-center justify-content-center text-center p-4">
+                        <i class="fas fa-map-marked fa-4x text-gold mb-3"></i>
+                        <h4 class="text-white">Interactive Headquarters Map</h4>
+                        <p class="text-secondary max-w-md">Our main office is located in Beverly Hills, CA. Visit us for VIP physical test drives or booking checks.</p>
+                        <a href="https://maps.google.com" target="_blank" class="btn btn-outline-gold mt-2">Open In Google Maps</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

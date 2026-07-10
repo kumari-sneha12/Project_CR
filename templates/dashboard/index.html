@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="padding-top: 6rem;"></div>
+
+<section class="py-5">
+    <div class="container">
+        
+        <div class="row g-4">
+            
+            <!-- Left Side Dashboard Navigation -->
+            <div class="col-lg-3">
+                <div class="glass-card p-4 border-color text-center mb-4">
+                    <div class="position-relative d-inline-block mb-3">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="rounded-circle border border-gold" style="width: 110px; height: 110px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-7x text-gold"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="text-white mb-1">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <span class="text-secondary small d-block mb-3">@{{ user.username }}</span>
+                    
+                    {% if user.bio %}
+                        <p class="text-secondary small mb-0 px-2 italic">"{{ user.bio }}"</p>
+                    {% endif %}
+                </div>
+
+                <div class="glass-card p-2 border-color">
+                    <div class="list-group list-group-flush" style="background: transparent;">
+                        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-gold border-color active"><i class="fas fa-gauge me-3"></i>Dashboard Overview</a>
+                        <a href="{% url 'edit_profile' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-user-cog me-3 text-gold"></i>Profile Settings</a>
+                        <a href="{% url 'my_bookings' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-calendar-alt me-3 text-gold"></i>My Bookings</a>
+                        <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action bg-transparent text-light border-color"><i class="fas fa-lock me-3 text-gold"></i>Change Password</a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0"><i class="fas fa-sign-out-alt me-3"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Main Content Panel -->
+            <div class="col-lg-9">
+                <!-- Welcome header -->
+                <div class="mb-4">
+                    <h2 class="text-white font-serif fw-bold">Dashboard Overview</h2>
+                    <p class="text-secondary mb-0">Hello, {{ user.first_name }}! Welcome to your DriveEase account workspace.</p>
+                </div>
+
+                <!-- Stats Widgets -->
+                <div class="row g-3 mb-5">
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h3 class="text-white mb-1">{{ bookings.count }}</h3>
+                                <span class="text-secondary small">Total Bookings</span>
+                            </div>
+                            <div class="p-3 bg-secondary rounded" style="color: var(--accent-gold); border: 1px solid var(--border-color);"><i class="fas fa-receipt fa-lg"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h3 class="text-white mb-1">{{ current_bookings.count }}</h3>
+                                <span class="text-secondary small">Active Reservations</span>
+                            </div>
+                            <div class="p-3 bg-secondary rounded" style="color: var(--accent-gold); border: 1px solid var(--border-color);"><i class="fas fa-calendar-check fa-lg"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h3 class="text-white mb-1">{{ favorite_cars.count }}</h3>
+                                <span class="text-secondary small">Wishlist Vehicles</span>
+                            </div>
+                            <div class="p-3 bg-secondary rounded" style="color: var(--accent-gold); border: 1px solid var(--border-color);"><i class="fas fa-heart fa-lg"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Bookings Summary -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-white font-serif mb-0"><i class="fas fa-car-side text-gold me-2"></i>Active & Pending Rentals</h4>
+                        <a href="{% url 'my_bookings' %}" class="text-gold small text-decoration-none">View All</a>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0" style="background-color: transparent;">
+                                <thead>
+                                    <tr class="text-secondary" style="font-size: 0.8rem; text-transform: uppercase;">
+                                        <th>Ref Code</th>
+                                        <th>Vehicle</th>
+                                        <th>Pickup Date</th>
+                                        <th>Return Date</th>
+                                        <th>Total Paid</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in current_bookings %}
+                                    <tr style="vertical-align: middle;">
+                                        <td><strong class="text-white">{{ booking.booking_reference }}</strong></td>
+                                        <td>{{ booking.car.name }}</td>
+                                        <td>{{ booking.pickup_date|date:"M d, Y" }}</td>
+                                        <td>{{ booking.return_date|date:"M d, Y" }}</td>
+                                        <td class="text-gold font-bold">${{ booking.grand_total }}</td>
+                                        <td>
+                                            <span class="badge {% if booking.status == 'Confirmed' %}bg-success{% elif booking.status == 'Pending' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                                {{ booking.status }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'booking_detail' booking.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-eye me-1"></i>View</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">No active or pending vehicle reservations found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorite Fleet (Wishlist) -->
+                <div>
+                    <h4 class="text-white font-serif mb-3"><i class="fas fa-heart text-gold me-2"></i>Favorite Fleet</h4>
+                    <div class="row g-3">
+                        {% for car in favorite_cars %}
+                        <div class="col-md-6">
+                            <div class="glass-card p-3 d-flex align-items-center gap-3">
+                                <img src="{{ car.image_url }}" alt="{{ car.name }}" class="rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <h6 class="text-white mb-0">{{ car.brand.name }} {{ car.model_name }}</h6>
+                                    <span class="text-gold font-bold small">${{ car.price_per_day }} / Day</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-gold btn-sm"><i class="fas fa-info-circle"></i> Details</a>
+                                    <a href="{% url 'wishlist_toggle' car.id %}" class="btn btn-danger btn-sm"><i class="fas fa-heart-broken"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-muted">
+                            <p class="mb-0">Your fleet wishlist is empty. Browse cars to save your favorites!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}
