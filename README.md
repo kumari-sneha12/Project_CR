@@ -28,6 +28,8 @@ The **Car Rental Website** is a web-based application developed using **Python, 
 
 This project was developed as a **Bachelor of Computer Applications (BCA) Final Year Project**.
 
+📄 **Detailed college submission document:** [`PROJECT_DOCUMENTATION.md`](./PROJECT_DOCUMENTATION.md)
+
 ---
 
 # ✨ Features
